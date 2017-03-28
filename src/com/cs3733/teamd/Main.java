@@ -1,6 +1,7 @@
 package com.cs3733.teamd;
 
 import java.sql.*;
+import java.util.List;
 
 public class Main {
 
@@ -49,19 +50,16 @@ public class Main {
         String queryServiceSql = "SELECT * FROM SERVICES";
 
         try {
-            Statement insertLocation = connection.createStatement();
-            //insertLocation.execute(insertServiceSql);
-            ResultSet s = insertLocation.executeQuery(queryServiceSql);
+            List<HospitalService> services = HospitalServiceDatabaseProvider.loadHospitalServicesFromDb(connection);
 
-            while(s.next()) {
-                String name = s.getString("name");
-                Integer floor = s.getInt("floor");
-                String room = s.getString("room");
-
-                System.out.println("Name: "+name
-                                    +"\tFloor: "+floor
-                                    +"\tRoom: "+room);
+            for(HospitalService s: services) {
+                System.out.println("Name: "+s.getName()
+                                    +"\tFloor: "+s.getFloor()
+                                    +"\tRoom: "+s.getRoom());
             }
+
+            HospitalService s = new HospitalService("Test Doctor", 4, "421C");
+            //HospitalServiceDatabaseProvider.addHospitalServiceToDb(s,connection);
 
         } catch (SQLException e) {
             e.printStackTrace();
