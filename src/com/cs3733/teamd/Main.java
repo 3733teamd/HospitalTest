@@ -34,21 +34,25 @@ public class Main {
         }
 
 
-
+        String dropServicesSql = "DROP TABLE SERVICES";
         String createServicesSql = "CREATE TABLE SERVICES"
-                + "(s_id INTEGER Primary Key,"
+                + "(s_id INTEGER GENERATED ALWAYS AS IDENTITY" +
+                "        (START WITH 1, INCREMENT BY 1),"
                 + "name VARCHAR(50),"
                 + "floor INTEGER,"
                 + "room VARCHAR(20))";
 
-        String insertServiceSql = "INSERT INTO SERVICES VALUES(" +
-                "1, 'Test Service', 4, '420C')";
+        String insertServiceSql = "INSERT INTO SERVICES " +
+                " (name, floor, room) VALUES(" +
+                "'Test Service', 4, '420C')";
 
         String queryServiceSql = "SELECT * FROM SERVICES";
 
         try {
             Statement insertLocation = connection.createStatement();
+            //insertLocation.execute(insertServiceSql);
             ResultSet s = insertLocation.executeQuery(queryServiceSql);
+
             while(s.next()) {
                 String name = s.getString("name");
                 Integer floor = s.getInt("floor");
