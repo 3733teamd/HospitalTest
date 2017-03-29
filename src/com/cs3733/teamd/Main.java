@@ -1,6 +1,7 @@
 package com.cs3733.teamd;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -36,12 +37,17 @@ public class Main {
 
 
         String dropServicesSql = "DROP TABLE SERVICES";
-        String createServicesSql = "CREATE TABLE SERVICES"
-                + "(s_id INTEGER GENERATED ALWAYS AS IDENTITY" +
+        String createProvidersSql = "CREATE TABLE PROVIDERS"
+                + "(id INTEGER GENERATED ALWAYS AS IDENTITY" +
                 "        (START WITH 1, INCREMENT BY 1),"
-                + "name VARCHAR(50),"
+                + "name VARCHAR(50))";
+
+        String createLocationsSql = "CREATE TABLE LOCATIONS"
+                + "(id INTEGER GENERATED ALWAYS AS IDENTITY" +
+                "        (START WITH 1, INCREMENT BY 1),"
                 + "floor INTEGER,"
-                + "room VARCHAR(20))";
+                + "room VARCHAR(20),"
+                + "p_id INTEGER)";
 
         String insertServiceSql = "INSERT INTO SERVICES " +
                 " (name, floor, room) VALUES(" +
@@ -50,16 +56,38 @@ public class Main {
         String queryServiceSql = "SELECT * FROM SERVICES";
 
         try {
-            List<HospitalService> services = HospitalServiceDatabaseProvider.loadHospitalServicesFromDb(connection);
+            //Statement s = connection.createStatement();
+            //s.execute(createLocationsSql);
+            List<Location> locations = new ArrayList<Location>();
+            locations.add(new Location(4, 1, "422F"));
+            locations.add(new Location(3, 1, "317B"));
+            locations.add(new Location(2, 1, "200"));
+            //locations.add(new Location(4, 1, "422C"));
+            HospitalProfessional hp = new HospitalProfessional("Dr. Amy", locations);
 
-            for(HospitalService s: services) {
+            HospitalProfessionalDatabaseProvider.setProfessional(hp, connection);
+
+            List<HospitalProfessional> providers
+                    = HospitalProfessionalDatabaseProvider.getAllProfessionals(connection);
+
+            for(HospitalProfessional p: providers) {
+                System.out.println("Name: "+p.getName());
+                for(Location l: p.getLocations()) {
+                    System.out.println("Room:"+l.getRoom());
+                }
+            }
+            //HospitalService s2 = new HospitalService("Test Doctor", 4, "421D");
+            //HospitalServiceDatabaseProvider.addHospitalServiceToDb(s2,connection);
+
+            //List<HospitalService> services = HospitalServiceDatabaseProvider.loadHospitalServicesFromDb(connection);
+
+            /*for(HospitalService s: services) {
                 System.out.println("Name: "+s.getName()
                                     +"\tFloor: "+s.getFloor()
                                     +"\tRoom: "+s.getRoom());
-            }
+            }*/
 
-            HospitalService s = new HospitalService("Test Doctor", 4, "421C");
-            //HospitalServiceDatabaseProvider.addHospitalServiceToDb(s,connection);
+
 
         } catch (SQLException e) {
             e.printStackTrace();
